@@ -260,20 +260,55 @@
 
       <section class="section container contact" id="contact" aria-labelledby="contact-title">
         <h2 id="contact-title" class="section-title"><span class="num">05</span> Contact</h2>
-        <p class="contact-lead">
-          Looking for someone to build or rescue a TypeScript product, design a public API, or add
-          AI features that hold up in production? I'd be glad to talk.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="mailto:ayment64@gmail.com">ayment64@gmail.com</a>
-          <a class="btn" href="https://github.com/el-compte" rel="me">GitHub</a>
-          <a class="btn" href="https://www.linkedin.com/in/aymen-tlili-7848a0184/" rel="me">LinkedIn</a>
+        <div class="contact-grid">
+          <div>
+            <p class="contact-lead">
+              Looking for someone to build or rescue a TypeScript product, design a public API, or
+              add AI features that hold up in production? Send me a message and I'll reply within
+              a day or two.
+            </p>
+            <p class="contact-alt">Prefer email or a profile?</p>
+            <div class="hero-actions contact-links">
+              <a class="btn" href="mailto:ayment64@gmail.com">ayment64@gmail.com</a>
+              <a class="btn" href="https://github.com/el-compte" rel="me">GitHub</a>
+              <a class="btn" href="https://www.linkedin.com/in/aymen-tlili-7848a0184/" rel="me">LinkedIn</a>
+            </div>
+          </div>
+
+          <form class="contact-form" id="contact-form" novalidate>
+            <div class="field">
+              <label for="cf-name">Your name</label>
+              <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="100" />
+            </div>
+            <div class="field">
+              <label for="cf-email">Your email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" />
+            </div>
+            <div class="field">
+              <label for="cf-topic">What's it about?</label>
+              <select id="cf-topic" name="topic">
+                <option>Full-time or part-time role</option>
+                <option>Freelance project</option>
+                <option>Something else</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cf-message">Message</label>
+              <textarea id="cf-message" name="message" rows="5" required minlength="10" maxlength="5000"></textarea>
+            </div>
+            <!-- Spam trap: hidden from people, but bots tend to fill it in. -->
+            <label class="trap" aria-hidden="true">
+              Leave this empty <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+            </label>
+            <button class="btn btn-primary" type="submit">Send message</button>
+            <p class="form-status" id="cf-status" role="status" aria-live="polite"></p>
+          </form>
         </div>
       </section>
     </main>
 
     <footer class="site-footer container">
-      <p>© <span id="year">2026</span> Aymen Tlili · Built with HTML and CSS · Hosted on GitHub Pages</p>
+      <p>© <span id="year">2026</span> Aymen Tlili · Built with HTML and CSS</p>
     </footer>
 
     <script src="script.js" defer></script>

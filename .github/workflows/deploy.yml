@@ -1,0 +1,71 @@
+name: Deploy
+
+# Builds the site with the contact-form key from GitHub secrets and deploys it to Vercel.
+# Repository secrets (Settings > Secrets and variables > Actions):
+#   WEB3FORMS_ACCESS_KEY  Web3Forms access key, with its dashes
+#   VERCEL_TOKEN          token from https://vercel.com/account/tokens
+#   VERCEL_ORG_ID         Vercel team ID
+#   VERCEL_PROJECT_ID     Vercel project ID
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Check the secrets are set
+        run: |
+          missing=0
+          for name in WEB3FORMS_ACCESS_KEY VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing the $name secret. Add it under Settings > Secrets and variables > Actions."
+              missing=1
+            fi
+          done
+          # Web3Forms rejects the key without its dashes, so catch that here.
+          uuid='^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$'
+          if [ -n "$WEB3FORMS_ACCESS_KEY" ] && ! [[ "$WEB3FORMS_ACCESS_KEY" =~ $uuid ]]; then
+            echo "::error::WEB3FORMS_ACCESS_KEY must be the key exactly as Web3Forms shows it, with dashes."
+            missing=1
+          fi
+          exit "$missing"
+
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Build the site with the contact-form key
+        run: |
+          rsync -a --exclude='.*' --exclude=README.md --exclude=vercel.json --exclude=dist ./ dist/
+          sed -i "s/__WEB3FORMS_ACCESS_KEY__/$WEB3FORMS_ACCESS_KEY/" dist/script.js
+          if grep -q '__WEB3FORMS_ACCESS_KEY__' dist/script.js; then
+            echo "::error::The key placeholder is still in dist/script.js."
+            exit 1
+          fi
+          node --check dist/script.js
+          ls -la dist
+
+      - name: Install the Vercel CLI
+        run: npm install --global vercel@62.0.0
+
+      - name: Deploy to Vercel
+        working-directory: dist
+        run: |
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          url=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "Deployed: $url" >> "$GITHUB_STEP_SUMMARY"

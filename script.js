@@ -21,9 +21,11 @@ const year = document.getElementById('year');
 if (year) year.textContent = String(new Date().getFullYear());
 
 // Contact form. Messages go to my inbox through Web3Forms (https://web3forms.com).
-// The access key is meant to be public; paste it here to turn on sending.
-// Without it, the form opens the visitor's email app with the message filled in.
-const WEB3FORMS_ACCESS_KEY = '87b81aab-0b73-40e3-8110-e63fa486297d';
+// The deploy pipeline swaps this placeholder for the WEB3FORMS_ACCESS_KEY GitHub secret
+// (see .github/workflows/deploy.yml). Left as is, for example in a local preview,
+// the form opens the visitor's email app with the message filled in instead.
+const WEB3FORMS_ACCESS_KEY = '__WEB3FORMS_ACCESS_KEY__';
+const CAN_SEND_DIRECTLY = !WEB3FORMS_ACCESS_KEY.startsWith('__');
 const CONTACT_EMAIL = 'ayment64@gmail.com';
 
 const form = document.getElementById('contact-form');
@@ -76,7 +78,7 @@ form?.addEventListener('submit', async (event) => {
     return;
   }
 
-  if (!WEB3FORMS_ACCESS_KEY) {
+  if (!CAN_SEND_DIRECTLY) {
     window.location.href = mailtoLink(name, email, topic, message);
     setStatus('Your email app should open with the message ready to send.', 'success');
     return;

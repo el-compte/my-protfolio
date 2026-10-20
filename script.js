@@ -23,7 +23,7 @@ if (year) year.textContent = String(new Date().getFullYear());
 // Contact form. Messages go to my inbox through Web3Forms (https://web3forms.com).
 // The access key is meant to be public; paste it here to turn on sending.
 // Without it, the form opens the visitor's email app with the message filled in.
-const WEB3FORMS_ACCESS_KEY = '69ce9ccaabb64972ae4f8f37f4b5a925';
+const WEB3FORMS_ACCESS_KEY = '87b81aab-0b73-40e3-8110-e63fa486297d';
 const CONTACT_EMAIL = 'ayment64@gmail.com';
 
 const form = document.getElementById('contact-form');
